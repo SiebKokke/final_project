@@ -30,3 +30,27 @@ CREATE USER 'siebrand'@'localhost' IDENTIFIED BY 'news_password123';
 CREATE DATABASE news_project;
 GRANT ALL PRIVILEGES ON news_project.* TO 'siebrand'@'localhost';
 FLUSH PRIVILEGES;
+
+Running the Application with Docker:
+
+1. Build and start the containers:
+   ```bash
+   docker-compose up --build
+   docker-compose exec web python manage.py migrate
+
+Sphinx Documentation:
+
+Viewing Documentation:
+
+Sphinx-generated documentation is included in the `/docs` directory.
+
+- To view the documentation, open:  
+  `docs/_build/html/index.html`  
+  in your web browser.
+
+- To rebuild the docs (optional, requires Sphinx):
+   ```bash
+   cd docs
+   make html
+
+run pip freeze > requirements.txt
