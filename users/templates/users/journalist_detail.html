@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ journalist.username }}</h2>
+  <p>Email: {{ journalist.email }}</p>
+  <p>Role: {{ journalist.role }}</p>
+  
+  {# Show Subscribe/Unsubscribe for readers #}
+  {% if user.is_authenticated and user.role == "reader" and user != journalist %}
+    {% if journalist not in user.subscriptions_journalists.all %}
+      <form method="post" action="{% url 'subscribe-journalist' journalist.pk %}">
+        {% csrf_token %}
+        <button type="submit">Subscribe to {{ journalist.username }}</button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'unsubscribe-journalist' journalist.pk %}">
+        {% csrf_token %}
+        <button type="submit">Unsubscribe from {{ journalist.username }}</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <h3>Affiliated Publications</h3>
+  <ul>
+    {% for publisher in journalist.publisher_journalists.all %}
+      <li>
+        <a href="{% url 'publisher-detail' publisher.pk %}">{{ publisher.name }}</a>
+      </li>
+    {% empty %}
+      <li>This journalist is not affiliated with any publications.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Articles by {{ journalist.username }}</h3>
+  <ul>
+    {% for article in journalist.articles.all %}
+      {% if article.approved or user.role == "editor" or user.role == "journalist" %}
+        <li>
+          <a href="{% url 'article-detail' article.pk %}">{{ article.title }}</a>
+          {% if not article.approved %}<span style="color:orange;"> (Pending)</span>{% endif %}
+        </li>
+      {% endif %}
+    {% empty %}
+      <li>No articles found.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Independent Newsletters by {{ journalist.username }}</h3>
+  <ul>
+    {% for nl in journalist.newsletters.all %}
+      {% if not nl.publisher %}
+        <li>
+          <a href="{% url 'newsletter-detail' nl.pk %}">{{ nl.title }}</a>
+          {% if nl.sent_at %}(Sent){% endif %}
+        </li>
+      {% endif %}
+    {% empty %}
+      <li>No independent newsletters found.</li>
+    {% endfor %}
+  </ul>
+  
+  <a href="{% url 'journalist-list' %}">Back to Journalists</a>
+{% endblock %}

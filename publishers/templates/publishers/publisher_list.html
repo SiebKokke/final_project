@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Publishers</h2>
+
+  {# Show Create Publisher button for Editors #}
+  {% if user.is_authenticated and user.role == "editor" %}
+    <a href="{% url 'publisher-create' %}" style="margin-bottom: 20px; display: inline-block; background: #ffa500; color: #fff; padding: 8px 14px; border-radius: 4px; text-decoration: none;">
+      + Create New Publisher
+    </a>
+  {% endif %}
+
+  <ul style="margin-top: 20px;">
+    {% for publisher in publishers %}
+      <li>
+        <a href="{% url 'publisher-detail' publisher.pk %}">{{ publisher.name }}</a>
+      </li>
+    {% empty %}
+      <li>No publishers found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

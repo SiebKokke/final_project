@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ publisher.name }}</h2>
+  <p>{{ publisher.description }}</p>
+
+  {# Show Edit button for Editors #}
+  {% if user.is_authenticated and user.role == "editor" %}
+    <a href="{% url 'publisher-edit' publisher.pk %}" style="margin-bottom: 16px; display:inline-block; background: #ffa500; color: #fff; padding: 7px 12px; border-radius: 4px; text-decoration: none;">Edit Publisher</a>
+  {% endif %}
+
+  {# Show Subscribe/Unsubscribe button for Readers #}
+  {% if user.is_authenticated and user.role == "reader" %}
+    {% if publisher not in user.subscriptions_publishers.all %}
+      <form method="post" action="{% url 'subscribe-publisher' publisher.pk %}" style="margin-bottom:16px;">
+        {% csrf_token %}
+        <button type="submit">Subscribe to {{ publisher.name }}</button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'unsubscribe-publisher' publisher.pk %}" style="margin-bottom:16px;">
+        {% csrf_token %}
+        <button type="submit">Unsubscribe from {{ publisher.name }}</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <h3>Editors</h3>
+  <ul>
+    {% for editor in publisher.editors.all %}
+      <li>{{ editor.username }}</li>
+    {% empty %}
+      <li>No editors for this publisher.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Journalists</h3>
+  <ul>
+    {% for journalist in publisher.journalists.all %}
+      <li>{{ journalist.username }}</li>
+    {% empty %}
+      <li>No journalists for this publisher.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Articles</h3>
+<ul>
+  {% for article in publisher.articles.all %}
+    {# Only approved for everyone, or all for editors/journalists #}
+    {% if article.approved %}
+      <li>
+        <a href="{% url 'article-detail' article.pk %}">{{ article.title }}</a>
+        {% if not article.approved %}<span style="color:orange;"> (Pending)</span>{% endif %}
+      </li>
+    {% elif user.is_authenticated and user.role == "editor" %}
+      <li>
+        <a href="{% url 'article-detail' article.pk %}">{{ article.title }}</a>
+        {% if not article.approved %}<span style="color:orange;"> (Pending)</span>{% endif %}
+      </li>
+    {% elif user.is_authenticated and user.role == "journalist" %}
+      <li>
+        <a href="{% url 'article-detail' article.pk %}">{{ article.title }}</a>
+        {% if not article.approved %}<span style="color:orange;"> (Pending)</span>{% endif %}
+      </li>
+    {% endif %}
+  {% empty %}
+    <li>No articles yet.</li>
+  {% endfor %}
+</ul>
+
+  <a href="{% url 'publisher-list' %}">Back to publishers</a>
+{% endblock %}
+

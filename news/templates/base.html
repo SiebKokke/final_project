@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f8f9fa; }
+        header { background: #003366; color: white; padding: 1.5rem 2rem 1rem 2rem; }
+        nav { margin-top: 0.5rem; }
+        nav a { color: #ffa500; margin-right: 1.5rem; font-weight: bold; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .welcome { float: right; color: #ffd700; }
+        main { padding: 2rem; max-width: 900px; margin: 0 auto; background: white; border-radius: 6px; min-height: 70vh; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
+        footer { background: #003366; color: #fff; padding: 1rem 2rem; text-align: center; margin-top: 2rem; }
+        h1 { margin-top: 0; }
+        .nav-spacer { margin-bottom: 1.5rem; }
+        .clearfix::after { content: ""; clear: both; display: table; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="clearfix">
+            <h1 style="float: left;">News Application</h1>
+            <span class="welcome">
+                {% if user.is_authenticated %}
+                    Welcome, {{ user.username }}
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:none;border:none;color:#fff;text-decoration:underline;cursor:pointer;padding:0;font:inherit;">
+                            Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a> | <a href="{% url 'signup' %}">Register</a>
+                {% endif %}
+            </span>        
+        </div>
+        <nav class="nav-spacer">
+            <a href="{% url 'article-list' %}">Home</a>
+            <a href="{% url 'publisher-list' %}">Publishers</a>
+            <a href="{% url 'journalist-list' %}">Journalists</a>
+            {% if user.is_authenticated and user.role == "journalist" %}
+                <a href="{% url 'article-create' %}">Write Article</a>
+                {% if user.is_authenticated and user.role == "journalist" %}
+            <a href="{% url 'newsletter-create' %}">Write Newsletter</a>
+            {% endif %}
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        &copy; 2025 News App
+    </footer>
+</body>
+</html>

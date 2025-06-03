@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Articles</h2>
+  <ul>
+    {% for article in articles %}
+      <li>
+        <a href="{% url 'article-detail' article.pk %}">{{ article.title }}</a>
+        {% if user.is_authenticated and article.author == user %}
+          - <a href="{% url 'article-edit' article.pk %}">Edit</a>
+          - <a href="{% url 'article-delete' article.pk %}">Delete</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No articles found.</li>
+    {% endfor %}
+  </ul>
+  {% if user.is_authenticated and user.role == "journalist" %}
+    <a href="{% url 'article-create' %}">Create new article</a>
+  {% endif %}
+{% endblock %}

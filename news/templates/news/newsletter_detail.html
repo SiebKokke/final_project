@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ newsletter.title }}</h2>
+  <p>{{ newsletter.content }}</p>
+  <p>
+    Author: {{ newsletter.author.username }}
+    {% if newsletter.publisher %}
+      | Publisher: <a href="{% url 'publisher-detail' newsletter.publisher.pk %}">{{ newsletter.publisher.name }}</a>
+    {% else %}
+      | Publisher: Independent
+    {% endif %}
+  </p>
+  <p>
+    Created: {{ newsletter.created_at|date:"Y-m-d H:i" }}
+    {% if newsletter.sent_at %}
+      | Sent: {{ newsletter.sent_at|date:"Y-m-d H:i" }}
+    {% endif %}
+  </p>
+
+  {% if can_send_newsletter and not newsletter.sent_at %}
+    <form method="post" action="{% url 'newsletter-send' newsletter.pk %}">
+      {% csrf_token %}
+      <button type="submit">Send Newsletter</button>
+    </form>
+  {% endif %}
+
+  <a href="{% url 'newsletter-list' %}">Back to Newsletters</a>
+{% endblock %}

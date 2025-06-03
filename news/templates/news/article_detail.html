@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ article.title }}</h2>
+  <p>{{ article.content }}</p>
+  <p>Author: {{ article.author }}</p>
+  <p>Publisher: {{ article.publisher }}</p>
+  <p>Status: {% if article.approved %}Approved{% else %}Pending{% endif %}</p>
+  <a href="{% url 'article-list' %}">Back to Articles</a>
+  {% if user.is_authenticated and user.role == "editor" and not article.approved %}
+    <form action="{% url 'article-approve' article.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Approve Article</button>
+    </form>
+  {% endif %}
+{% endblock %}

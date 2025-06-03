@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Send Newsletter</h2>
+<p>Are you sure you want to send "{{ newsletter.title }}" to all subscribers?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Send Newsletter</button>
+</form>
+<a href="{% url 'newsletter-detail' newsletter.pk %}">Cancel</a>
+{% endblock %}
